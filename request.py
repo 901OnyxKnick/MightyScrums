@@ -1,4 +1,5 @@
 # all code from tutorial: https://www.youtube.com/watch?v=zSAQxq6YOxg
+# API: https://www.alphavantage.co/
 
 import json
 import requests
@@ -17,5 +18,14 @@ def retrieve_data(function: str, symbol: str, api_key: str) -> dict:
     parsed = json.loads(data)
 
     return parsed
+
+# Function to get the function type and symbol 
+# def get_input()
+
+# Function to insert results into a chart with user input
+
+# main function to call all functions
+
+# generating html
 
 pretty_print(retrieve_data('TIME_SERIES_DAILY', 'IBM', api_key))
