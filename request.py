@@ -29,3 +29,5 @@ def retrieve_data(function: str, symbol: str, api_key: str) -> dict:
 # generating html
 
 pretty_print(retrieve_data('TIME_SERIES_DAILY', 'IBM', api_key))
+
+# Knick testing editing this file on October 18, 2023
