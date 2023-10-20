@@ -36,7 +36,7 @@ def retrieve_data(function: str, symbol: str, api_key: str) -> dict:
 data = retrieve_data('TIME_SERIES_DAILY', 'IBM', api_key)
 # pretty_print(retrieve_data('TIME_SERIES_DAILY', 'IBM', api_key))
 
-# generating chart
+# generating line chart
 def generate_line_chart_html(data, title='Stock Price Chart'):
     
     date_list = []
@@ -55,7 +55,6 @@ def generate_line_chart_html(data, title='Stock Price Chart'):
 
     fig = px.line(df, x='Date', y=['Open', 'High', 'Low', 'Close'], title=title)
 
-    # fig.update_traces(line=dict(color=['red', 'blue', 'green', 'yellow']))
     fig.update_traces(line=dict(color='#FF5733'), selector=dict(name='Open'))
     fig.update_traces(line=dict(color='#0072B2'), selector=dict(name='High'))
     fig.update_traces(line=dict(color='#228B22'), selector=dict(name='Low'))
@@ -65,12 +64,12 @@ def generate_line_chart_html(data, title='Stock Price Chart'):
     fig.update_yaxes(title='Price')
 
     fig.update_layout(legend=dict(
-            orientation='v',  # 'v' for vertical, 'h' for horizontal
-            x=-.1,               # x-coordinate for positioning
+            orientation='v', 
+            x=-.1,               
             y=1.05,
             bgcolor='white',
             bordercolor='gray',
-            borderwidth=1           # y-coordinate for positioning
+            borderwidth=1          
         ))
     
     y_values = [130, 135, 140, 145, 150]
@@ -84,11 +83,11 @@ def generate_line_chart_html(data, title='Stock Price Chart'):
             xref='x',
             yref='y',
             line=dict(
-                color='gray',       # Line color
-                width=1,            # Line width
-                dash='dot'          # Line style (dotted)
+                color='gray',       
+                width=1,            
+                dash='dot'          
             )
-        ) for y in y_values  # Add horizontal lines at the mean of each price
+        ) for y in y_values  
     ])
 
 
@@ -112,46 +111,46 @@ def generate_line_chart_html(data, title='Stock Price Chart'):
 
     return html
 
-def generate_bar_chart_html(data, title='Bar Chart'):
-    date_list = []
-    close_price_list = []
+# def generate_bar_chart_html(data, title='Bar Chart'):
+#     date_list = []
+#     close_price_list = []
 
-    for date, values in data['Time Series (Daily)'].items():
-        date_list.append(date)
-        close_price_list.append(float(values['4. close']))
+#     for date, values in data['Time Series (Daily)'].items():
+#         date_list.append(date)
+#         close_price_list.append(float(values['4. close']))
 
-    df = pd.DataFrame({'Date': date_list, 'Close': close_price_list})
+#     df = pd.DataFrame({'Date': date_list, 'Close': close_price_list})
 
-    plt.figure(figsize=(12, 6))
-    plt.bar(df['Date'], df['Close'], color='blue', width=0.5)
-    plt.xlabel('Date')
-    plt.ylabel('Close Price')
-    plt.title(title)
-    plt.xticks(range(0, len(df['Date']), 5), df['Date'][::5], rotation=45)
-    plt.tight_layout()
+#     plt.figure(figsize=(12, 6))
+#     plt.bar(df['Date'], df['Close'], color='blue', width=0.5)
+#     plt.xlabel('Date')
+#     plt.ylabel('Close Price')
+#     plt.title(title)
+#     plt.xticks(range(0, len(df['Date']), 5), df['Date'][::5], rotation=45)
+#     plt.tight_layout()
 
-    # Convert the Matplotlib figure to HTML
-    buffer = io.BytesIO()
-    plt.savefig(buffer, format='png')
-    buffer.seek(0)
-    image_base64 = base64.b64encode(buffer.read()).decode()
-    chart_html = f'<img src="data:image/png;base64,{image_base64}">'
+#     # Convert the Matplotlib figure to HTML
+#     buffer = io.BytesIO()
+#     plt.savefig(buffer, format='png')
+#     buffer.seek(0)
+#     image_base64 = base64.b64encode(buffer.read()).decode()
+#     chart_html = f'<img src="data:image/png;base64,{image_base64}">'
 
-    # Wrap the chart HTML in a complete HTML page
-    html = f"""
-    <!DOCTYPE html>
-    <html>
-    <head>
-        <title>{title}</title>
-    </head>
-    <body>
-        <h1>{title}</h1>
-        {chart_html}
-    </body>
-    </html>
-    """
+#     # Wrap the chart HTML in a complete HTML page
+#     html = f"""
+#     <!DOCTYPE html>
+#     <html>
+#     <head>
+#         <title>{title}</title>
+#     </head>
+#     <body>
+#         <h1>{title}</h1>
+#         {chart_html}
+#     </body>
+#     </html>
+#     """
 
-    return html 
+#     return html 
 
 # bar_chart_html = generate_bar_chart_html(data)
 line_chart_html = generate_line_chart_html(data)
@@ -159,4 +158,7 @@ with open("line_chart.html", "w", encoding="utf-8") as file:
         file.write(line_chart_html)
 # with open("bar_chart.html", "w", encoding="utf-8") as file: 
 #      file.write(bar_chart_html)
+
+
+
 # Knick testing editing this file on October 18, 2023
