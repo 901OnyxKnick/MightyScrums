@@ -9,13 +9,32 @@ import matplotlib.pyplot as plt
 import io 
 import base64
 import numpy as np
+import plotly.graph_objects as go
 
 api_key = 'UKYXF61L981EG9X3'
 
 def pretty_print(data: dict):
     print(json.dumps(data, indent=4))
 
-def retrieve_data(function: str, symbol: str, api_key: str) -> dict:
+# def retrieve_data(function: str, symbol: str, api_key: str) -> dict:
+
+#     url = f"https://www.alphavantage.co/query?function={function}&symbol={symbol}&apikey={api_key}"
+#     response = requests.get(url)
+
+#     data = response.text
+
+#     parsed = json.loads(data)
+
+#     return parsed
+def retrieve_data(TimeSeries: int, symbol: str, api_key: str) -> dict:
+    if TimeSeries == 1:
+        function = 'TIME_SERIES_INTRADAY'
+    elif TimeSeries == 2:
+        function = 'TIME_SERIES_DAILY'
+    elif TimeSeries == 3:
+        function = 'TIME_SERIES_WEEKLY'
+    elif TimeSeries == 4: 
+        function = 'TIME_SERIES_MONTHLY'
     url = f"https://www.alphavantage.co/query?function={function}&symbol={symbol}&apikey={api_key}"
     response = requests.get(url)
 
@@ -25,27 +44,54 @@ def retrieve_data(function: str, symbol: str, api_key: str) -> dict:
 
     return parsed
 
+
+# time series: TIME_SERIES_INTRADAY, TIME_SERIES_DAILY, TIME_SERIES_WEEKLY, TIME_SERIES_MONTHLY
 # Function to get the function type and symbol 
-# def get_input()
+def get_input():
+    stock_symbol = input("Enter the stock symbol: ")
+    bar_chart_type = int(input("Enter the bar chart type (1 for line chart, 2 for candlestick chart): "))
+    time_series = int(input("Enter the time series (intraday, daily, weekly, monthly): "))
+    start_date = input("Enter the start date (YYYY-MM-DD): ")
+    end_date = input("Enter the end date (YYYY-MM-DD): ")
+
+
+    data = retrieve_data(time_series, stock_symbol, api_key)
+    
+    # with open('output.json', 'w') as json_file:
+    #     json.dump(data, json_file, indent=4)
+    chart_html = generate_line_chart_html(data,bar_chart_type=bar_chart_type,time_series=time_series,start_date=start_date,end_date=end_date)
+    with open("chart.html", "w", encoding="utf-8") as file:
+        file.write(chart_html)
 
 # Function to insert results into a chart with user input
 
 # main function to call all functions
 
 # generating html
-data = retrieve_data('TIME_SERIES_DAILY', 'IBM', api_key)
+# data = retrieve_data('TIME_SERIES_DAILY', 'IBM', api_key)
 # pretty_print(retrieve_data('TIME_SERIES_DAILY', 'IBM', api_key))
 
 # generating line chart
-def generate_line_chart_html(data, title='Stock Price Chart'):
+
+def generate_line_chart_html(data, title='Stock Price Chart',bar_chart_type=1, time_series=1, start_date=None, end_date=None):
     
     date_list = []
     open_price_list = [] 
     high_price_list = []
     low_price_list = []
-    close_price_list = [] 
-    for date, values in data['Time Series (Daily)'].items():
-         date_list.append(date)
+    close_price_list = []
+     
+    if time_series == 1:
+        x = 'TIME_SERIES_INTRADAY'
+    elif time_series == 2:
+        x = 'Time Series (Daily)'
+    elif time_series == 3:
+        x = 'Weekly Time Series'
+    elif time_series == 4: 
+        x = 'Monthly Time Series'
+    # ['Time Series (Daily)']
+    for date, values in data[x].items():
+         date_list.append(pd.to_datetime(date).to_pydatetime())
          open_price_list.append(float(values['1. open']))
          high_price_list.append(float(values['2. high']))
          low_price_list.append(float(values['3. low']))
@@ -53,7 +99,15 @@ def generate_line_chart_html(data, title='Stock Price Chart'):
 
     df = pd.DataFrame({'Date': date_list, 'Open': open_price_list, 'High': high_price_list, 'Low': low_price_list, 'Close': close_price_list})
 
-    fig = px.line(df, x='Date', y=['Open', 'High', 'Low', 'Close'], title=title)
+    if bar_chart_type == 1:
+        fig = px.line(df, x='Date', y=['Open', 'High', 'Low', 'Close'], title=title)
+    elif bar_chart_type == 2:
+        fig = go.Figure(data=[go.Candlestick(x=df['Date'],
+                open=df['Open'],
+                high=df['High'],
+                low=df['Low'],
+                close=df['Close'])])
+        fig.update_layout(title=title)
 
     fig.update_traces(line=dict(color='#FF5733'), selector=dict(name='Open'))
     fig.update_traces(line=dict(color='#0072B2'), selector=dict(name='High'))
@@ -93,6 +147,24 @@ def generate_line_chart_html(data, title='Stock Price Chart'):
 
 
     # Convert the Plotly figure to HTML
+    if start_date and end_date:
+        df = df[(df['Date'] >= start_date) & (df['Date'] <= end_date)]
+
+    if time_series == 1:
+        # Perform intraday resampling, e.g., hourly or minute data
+        # You can add your resampling logic here
+        pass
+    elif time_series == 2:
+        # Daily data is already available, so no resampling needed
+        pass
+    elif time_series == 3:
+        # Resample to weekly data
+        df.set_index('Date', inplace=True)
+        df = df.resample('W').last()
+    elif time_series == 4:
+        # Resample to monthly data
+        df.set_index('Date', inplace=True)
+        df = df.resample('M').last()
     chart_html = fig.to_html(full_html=False)
 
     # Wrap the chart HTML in a complete HTML page
@@ -111,54 +183,14 @@ def generate_line_chart_html(data, title='Stock Price Chart'):
 
     return html
 
-# def generate_bar_chart_html(data, title='Bar Chart'):
-#     date_list = []
-#     close_price_list = []
 
-#     for date, values in data['Time Series (Daily)'].items():
-#         date_list.append(date)
-#         close_price_list.append(float(values['4. close']))
-
-#     df = pd.DataFrame({'Date': date_list, 'Close': close_price_list})
-
-#     plt.figure(figsize=(12, 6))
-#     plt.bar(df['Date'], df['Close'], color='blue', width=0.5)
-#     plt.xlabel('Date')
-#     plt.ylabel('Close Price')
-#     plt.title(title)
-#     plt.xticks(range(0, len(df['Date']), 5), df['Date'][::5], rotation=45)
-#     plt.tight_layout()
-
-#     # Convert the Matplotlib figure to HTML
-#     buffer = io.BytesIO()
-#     plt.savefig(buffer, format='png')
-#     buffer.seek(0)
-#     image_base64 = base64.b64encode(buffer.read()).decode()
-#     chart_html = f'<img src="data:image/png;base64,{image_base64}">'
-
-#     # Wrap the chart HTML in a complete HTML page
-#     html = f"""
-#     <!DOCTYPE html>
-#     <html>
-#     <head>
-#         <title>{title}</title>
-#     </head>
-#     <body>
-#         <h1>{title}</h1>
-#         {chart_html}
-#     </body>
-#     </html>
-#     """
-
-#     return html 
-
-# bar_chart_html = generate_bar_chart_html(data)
-line_chart_html = generate_line_chart_html(data)
-with open("line_chart.html", "w", encoding="utf-8") as file:
-        file.write(line_chart_html)
+# chart_html = generate_line_chart_html(data)
+# with open("chart.html", "w", encoding="utf-8") as file:
+#         file.write(chart_html)
 # with open("bar_chart.html", "w", encoding="utf-8") as file: 
 #      file.write(bar_chart_html)
 
 
 
 # Knick testing editing this file on October 18, 2023
+get_input()
