@@ -16,6 +16,7 @@ api_key = 'UKYXF61L981EG9X3'
 def pretty_print(data: dict):
     print(json.dumps(data, indent=4))
 
+
 # def retrieve_data(function: str, symbol: str, api_key: str) -> dict:
 
 #     url = f"https://www.alphavantage.co/query?function={function}&symbol={symbol}&apikey={api_key}"
@@ -28,16 +29,23 @@ def pretty_print(data: dict):
 #     return parsed
 
 # Testing changes
-def retrieve_data(TimeSeries: int, symbol: str, api_key: str) -> dict:
+
+
+def retrieve_data(TimeSeries: int, symbol: str, api_key: str, time: str) -> dict:
     if TimeSeries == 1:
         function = 'TIME_SERIES_INTRADAY'
+        url = f"https://www.alphavantage.co/query?function={function}&symbol={symbol}&interval={time}&apikey={api_key}"
+        # url = 'https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol=IBM&interval=5min&apikey=demo'
     elif TimeSeries == 2:
         function = 'TIME_SERIES_DAILY'
+        url = f"https://www.alphavantage.co/query?function={function}&symbol={symbol}&apikey={api_key}"
     elif TimeSeries == 3:
         function = 'TIME_SERIES_WEEKLY'
+        url = f"https://www.alphavantage.co/query?function={function}&symbol={symbol}&apikey={api_key}"
     elif TimeSeries == 4: 
         function = 'TIME_SERIES_MONTHLY'
-    url = f"https://www.alphavantage.co/query?function={function}&symbol={symbol}&apikey={api_key}"
+        url = f"https://www.alphavantage.co/query?function={function}&symbol={symbol}&apikey={api_key}"
+    
     response = requests.get(url)
 
     data = response.text
@@ -112,21 +120,12 @@ def get_input():
 
     # with open('output.json', 'w') as json_file:
     #     json.dump(data, json_file, indent=4)
-    chart_html = generate_line_chart_html(data,bar_chart_type=bar_chart_type,time_series=time_series,start_date=start_date,end_date=end_date)
+    chart_html = generate_line_chart_html(data,bar_chart_type=bar_chart_type,time_series=time_series,start_date=start_date,end_date=end_date,time=time)
+
     with open("chart.html", "w", encoding="utf-8") as file:
         file.write(chart_html)
 
-# Function to insert results into a chart with user input
-
-# main function to call all functions
-
-# generating html
-# data = retrieve_data('TIME_SERIES_DAILY', 'IBM', api_key)
-# pretty_print(retrieve_data('TIME_SERIES_DAILY', 'IBM', api_key))
-
-# generating line chart
-
-def generate_line_chart_html(data, title='Stock Price Chart',bar_chart_type=1, time_series=1, start_date=None, end_date=None):
+def generate_line_chart_html(data, title='Stock Price Chart',bar_chart_type=1, time_series=1, start_date=None, end_date=None, time=None):
     
     date_list = []
     open_price_list = [] 
@@ -135,7 +134,9 @@ def generate_line_chart_html(data, title='Stock Price Chart',bar_chart_type=1, t
     close_price_list = []
      
     if time_series == 1:
-        x = 'TIME_SERIES_INTRADAY'
+        # Time Series (60min)
+        x = f'Time Series ({time})'
+
     elif time_series == 2:
         x = 'Time Series (Daily)'
     elif time_series == 3:
@@ -196,26 +197,18 @@ def generate_line_chart_html(data, title='Stock Price Chart',bar_chart_type=1, t
             )
         ) for y in y_values  
     ])
-
-
-
-    # Convert the Plotly figure to HTML
+    
     if start_date and end_date:
         df = df[(df['Date'] >= start_date) & (df['Date'] <= end_date)]
 
     if time_series == 1:
-        # Perform intraday resampling, e.g., hourly or minute data
-        # You can add your resampling logic here
         pass
     elif time_series == 2:
-        # Daily data is already available, so no resampling needed
         pass
     elif time_series == 3:
-        # Resample to weekly data
         df.set_index('Date', inplace=True)
         df = df.resample('W').last()
     elif time_series == 4:
-        # Resample to monthly data
         df.set_index('Date', inplace=True)
         df = df.resample('M').last()
     chart_html = fig.to_html(full_html=False)
@@ -236,14 +229,4 @@ def generate_line_chart_html(data, title='Stock Price Chart',bar_chart_type=1, t
 
     return html
 
-
-# chart_html = generate_line_chart_html(data)
-# with open("chart.html", "w", encoding="utf-8") as file:
-#         file.write(chart_html)
-# with open("bar_chart.html", "w", encoding="utf-8") as file: 
-#      file.write(bar_chart_html)
-
-
-
-# Knick testing editing this file on October 18, 2023
 get_input()
