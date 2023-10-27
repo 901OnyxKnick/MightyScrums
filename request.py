@@ -1,5 +1,5 @@
-# all code from tutorial: https://www.youtube.com/watch?v=zSAQxq6YOxg
-# API: https://www.alphavantage.co/
+# Team 10 Project 3
+# 10/27/2023
 
 import json
 import requests
@@ -15,21 +15,6 @@ api_key = 'UKYXF61L981EG9X3'
 
 def pretty_print(data: dict):
     print(json.dumps(data, indent=4))
-
-
-# def retrieve_data(function: str, symbol: str, api_key: str) -> dict:
-
-#     url = f"https://www.alphavantage.co/query?function={function}&symbol={symbol}&apikey={api_key}"
-#     response = requests.get(url)
-
-#     data = response.text
-
-#     parsed = json.loads(data)
-
-#     return parsed
-
-# Testing changes
-
 
 def retrieve_data(TimeSeries: int, symbol: str, api_key: str, time: str) -> dict:
     if TimeSeries == 1:
@@ -127,7 +112,7 @@ def get_input():
 
     while True:
         try:
-            data = retrieve_data(time_series, stock_symbol, api_key)
+            data = retrieve_data(time_series, stock_symbol, api_key, time)
             if data is None:
                 raise ValueError("Failed to retrieve data.")
             break
@@ -136,8 +121,6 @@ def get_input():
         except Exception as e:
             print(f"Error occurred: {e}.")
 
-    # with open('output.json', 'w') as json_file:
-    #     json.dump(data, json_file, indent=4)
     chart_html = generate_line_chart_html(data,bar_chart_type=bar_chart_type,time_series=time_series,start_date=start_date,end_date=end_date,time=time)
 
     with open("chart.html", "w", encoding="utf-8") as file:
