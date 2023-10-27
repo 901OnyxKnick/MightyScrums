@@ -12,8 +12,20 @@ import numpy as np
 import plotly.graph_objects as go
 import webbrowser
 import os
+import yfinance as yf
 
 api_key = 'UKYXF61L981EG9X3'
+
+def check_stock_symbol(stock_symbol):
+    try:
+        stock = yf.Ticker(stock_symbol)
+        info = stock.info
+        if info is not None:
+            return True
+        else:
+            return False
+    except Exception as e:
+        print(f"Error occurred: {e}.")
 
 def pretty_print(data: dict):
     print(json.dumps(data, indent=4))
@@ -50,6 +62,10 @@ def get_input():
             print("Stock Data Visualizer")
             print("-----------------------")
             stock_symbol = input("\nEnter the stock symbol you are looking for: ")
+            if not check_stock_symbol(stock_symbol):
+                stock_symbol_list = "https://www.nasdaq.com/market-activity/stocks/screener"
+                error_message = f"Invalid stock symbol. Refer to {stock_symbol_list} for valid stock symbols."
+                raise ValueError(error_message)
             break
         except Exception as e:
             print(f"Error occurred: {e}.")
