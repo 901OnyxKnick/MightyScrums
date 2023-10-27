@@ -48,12 +48,20 @@ def retrieve_data(TimeSeries: int, symbol: str, api_key: str) -> dict:
 # time series: TIME_SERIES_INTRADAY, TIME_SERIES_DAILY, TIME_SERIES_WEEKLY, TIME_SERIES_MONTHLY
 # Function to get the function type and symbol 
 def get_input():
-    stock_symbol = input("Enter the stock symbol: ")
-    bar_chart_type = int(input("Enter the bar chart type (1 for line chart, 2 for candlestick chart): "))
-    time_series = int(input("Enter the time series (intraday, daily, weekly, monthly): "))
-    start_date = input("Enter the start date (YYYY-MM-DD): ")
-    end_date = input("Enter the end date (YYYY-MM-DD): ")
 
+    print("Stock Data Visualizer")
+    print("-----------------------")
+    stock_symbol = input("\nEnter the stock symbol you are looking for: ")
+    print("\nChart Types")
+    print("----------------")
+    print("1. Bar\n2. Candlestick")
+    bar_chart_type = int(input("\nEnter the bar chart type (1, 2): "))
+    print("\nSelect the Time Series of the chart you want to generate")
+    print("---------------------------------------------------------")
+    print("1. Intraday\n2. Daily\n3. Weekly\n4. Monthly")
+    time_series = int(input("\nEnter the time series (1, 2, 3, 4): "))
+    start_date = input("\nEnter the start date (YYYY-MM-DD): ")
+    end_date = input("\nEnter the end date (YYYY-MM-DD): ")
 
     data = retrieve_data(time_series, stock_symbol, api_key)
     
