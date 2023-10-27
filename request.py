@@ -43,17 +43,49 @@ def retrieve_data(TimeSeries: int, symbol: str, api_key: str, time: str) -> dict
 # time series: TIME_SERIES_INTRADAY, TIME_SERIES_DAILY, TIME_SERIES_WEEKLY, TIME_SERIES_MONTHLY
 # Function to get the function type and symbol 
 def get_input():
-    stock_symbol = input("Enter the stock symbol: ")
-    bar_chart_type = int(input("Enter the bar chart type (1 for line chart, 2 for candlestick chart): "))
-    time_series = int(input("Enter the time series (intraday, daily, weekly, monthly): "))
-    start_date = input("Enter the start date (YYYY-MM-DD): ")
-    end_date = input("Enter the end date (YYYY-MM-DD): ")
+    # stock_symbol = input("Enter the stock symbol: ")
+    # bar_chart_type = int(input("Enter the bar chart type (1 for line chart, 2 for candlestick chart): "))
+    # time_series = int(input("Enter the time series (intraday, daily, weekly, monthly): "))
+    # start_date = input("Enter the start date (YYYY-MM-DD): ")
+    # end_date = input("Enter the end date (YYYY-MM-DD): ")
+
+    print("Stock Data Visualizer")
+    print("-----------------------")
+    stock_symbol = input("\nEnter the stock symbol you are looking for: ")
+    print("\nChart Types")
+    print("----------------")
+    print("1. Bar\n2. Candlestick")
+    bar_chart_type = int(input("\nEnter the bar chart type (1, 2): "))
+    print("\nSelect the Time Series of the chart you want to generate")
+    print("---------------------------------------------------------")
+    print("1. Intraday\n2. Daily\n3. Weekly\n4. Monthly")
+    time_series = int(input("\nEnter the time series (1, 2, 3, 4): "))
+    if time_series == 1:
+        print("\nSelect the Time Interval of the chart you want to generate")
+        print("---------------------------------------------------------")
+        print("1. 1min\n2. 5min\n3. 15min\n4. 30min\n5. 60min")
+        userTime = int(input("\nEnter the time interval (1, 2 3, 4, 5): "))
+        if userTime == 1:
+            time = '1min'
+        elif userTime == 2:
+            time = '5min'
+        elif userTime == 3:
+            time = '15min'
+        elif userTime == 4:
+            time = '30min'
+        elif userTime == 5:
+            time = '60min'
+    else:
+        time = None
+    start_date = input("\nEnter the start date (YYYY-MM-DD): ")
+    end_date = input("\nEnter the end date (YYYY-MM-DD): ")
+
 
 
     data = retrieve_data(time_series, stock_symbol, api_key, time)
     
-    with open('output.json', 'w') as json_file:
-        json.dump(data, json_file, indent=4)
+    # with open('output.json', 'w') as json_file:
+    #     json.dump(data, json_file, indent=4)
     chart_html = generate_line_chart_html(data,bar_chart_type=bar_chart_type,time_series=time_series,start_date=start_date,end_date=end_date,time=time)
     with open("chart.html", "w", encoding="utf-8") as file:
         file.write(chart_html)
