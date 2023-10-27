@@ -10,6 +10,8 @@ import io
 import base64
 import numpy as np
 import plotly.graph_objects as go
+import webbrowser
+import os
 
 api_key = 'UKYXF61L981EG9X3'
 
@@ -38,7 +40,6 @@ def retrieve_data(TimeSeries: int, symbol: str, api_key: str, time: str) -> dict
     parsed = json.loads(data)
 
     return parsed
-
 
 # time series: TIME_SERIES_INTRADAY, TIME_SERIES_DAILY, TIME_SERIES_WEEKLY, TIME_SERIES_MONTHLY
 # Function to get the function type and symbol 
@@ -125,6 +126,10 @@ def get_input():
 
     with open("chart.html", "w", encoding="utf-8") as file:
         file.write(chart_html)
+        file.close()
+        filename = 'file:///'+os.getcwd()+'/' + 'chart.html'
+        webbrowser.open_new_tab(filename)
+
 
 def generate_line_chart_html(data, title='Stock Price Chart',bar_chart_type=1, time_series=1, start_date=None, end_date=None, time=None):
     
