@@ -58,6 +58,7 @@ def retrieve_data(TimeSeries: int, symbol: str, api_key: str, time: str) -> dict
 # time series: TIME_SERIES_INTRADAY, TIME_SERIES_DAILY, TIME_SERIES_WEEKLY, TIME_SERIES_MONTHLY
 # Function to get the function type and symbol 
 def get_input():
+
     while True:
         try:
             print("Stock Data Visualizer")
@@ -89,6 +90,23 @@ def get_input():
             time_series = int(input("\nEnter the time series (1, 2, 3, 4): "))
             if time_series not in [1, 2, 3, 4]:
                 raise ValueError("Please enter 1, 2, 3, or 4 for time series.")
+            elif time_series == 1:
+                print("\nSelect the Time Interval of the chart you want to generate")
+                print("---------------------------------------------------------")
+                print("1. 1min\n2. 5min\n3. 15min\n4. 30min\n5. 60min")
+                userTime = int(input("\nEnter the time interval (1, 2 3, 4, 5): "))
+                if userTime == 1:
+                    time = '1min'
+                elif userTime == 2:
+                    time = '5min'
+                elif userTime == 3:
+                    time = '15min'
+                elif userTime == 4:
+                    time = '30min'
+                elif userTime == 5:
+                    time = '60min'
+            else:
+                time = None
             break
         except ValueError as e:
             print(f"Value error occurred: {e}.")
