@@ -50,14 +50,19 @@ def retrieve_data(TimeSeries: int, symbol: str, api_key: str) -> dict:
 def get_input():
     while True:
         try:
-            stock_symbol = input("Enter the stock symbol: ")
+            print("Stock Data Visualizer")
+            print("-----------------------")
+            stock_symbol = input("\nEnter the stock symbol you are looking for: ")
             break
         except Exception as e:
-            print(f"Error: {e}.")
+            print(f"Error occurred: {e}.")
 
     while True:
         try:
-            bar_chart_type = int(input("Enter the bar chart type (1 for line chart, 2 for candlestick chart): "))
+            print("\nChart Types")
+            print("----------------")
+            print("1. Bar\n2. Candlestick")
+            bar_chart_type = int(input("\nEnter the bar chart type (1, 2): "))
             if bar_chart_type not in [1,2]:
                 raise ValueError("Please enter 1 or 2 for chart type.")
             break
@@ -68,7 +73,10 @@ def get_input():
 
     while True:
         try:
-            time_series = int(input("Enter the time series (intraday, daily, weekly, monthly): "))
+            print("\nSelect the Time Series of the chart you want to generate")
+            print("---------------------------------------------------------")
+            print("1. Intraday\n2. Daily\n3. Weekly\n4. Monthly")
+            time_series = int(input("\nEnter the time series (1, 2, 3, 4): "))
             if time_series not in [1, 2, 3, 4]:
                 raise ValueError("Please enter 1, 2, 3, or 4 for time series.")
             break
@@ -79,8 +87,8 @@ def get_input():
 
     while True:
         try:
-            start_date = input("Enter the start date (YYYY-MM-DD): ")
-            end_date = input("Enter the end date (YYYY-MM-DD): ")
+            start_date = input("\nEnter the start date (YYYY-MM-DD): ")
+            end_date = input("\nEnter the end date (YYYY-MM-DD): ")
             if start_date > end_date:
                 raise ValueError("Start date cannot be later than end date. Enter the dates again.")
             break
@@ -100,8 +108,8 @@ def get_input():
         except Exception as e:
             print(f"Error occurred: {e}.")
 
-            # with open('output.json', 'w') as json_file:
-            #     json.dump(data, json_file, indent=4)
+    # with open('output.json', 'w') as json_file:
+    #     json.dump(data, json_file, indent=4)
     chart_html = generate_line_chart_html(data,bar_chart_type=bar_chart_type,time_series=time_series,start_date=start_date,end_date=end_date)
     with open("chart.html", "w", encoding="utf-8") as file:
         file.write(chart_html)
