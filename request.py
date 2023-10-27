@@ -26,6 +26,8 @@ def pretty_print(data: dict):
 #     parsed = json.loads(data)
 
 #     return parsed
+
+# Testing changes
 def retrieve_data(TimeSeries: int, symbol: str, api_key: str) -> dict:
     if TimeSeries == 1:
         function = 'TIME_SERIES_INTRADAY'
