@@ -46,21 +46,6 @@ def get_input():
     stock_symbol = input("Enter the stock symbol: ")
     bar_chart_type = int(input("Enter the bar chart type (1 for line chart, 2 for candlestick chart): "))
     time_series = int(input("Enter the time series (intraday, daily, weekly, monthly): "))
-    if time_series == 1:
-        print("Options: 1min, 5min, 15min, 30min, 60min")
-        user = int(input("Enter the time interval (1,2,3,4,5)"))
-        if user == 1:
-            time = '1min'
-        elif user == 2:
-            time = '5min'
-        elif user == 3:
-            time = '15min'
-        elif user == 4:
-            time = '30min'
-        elif user == 5:
-            time = '60min'
-    else:
-        time = None
     start_date = input("Enter the start date (YYYY-MM-DD): ")
     end_date = input("Enter the end date (YYYY-MM-DD): ")
 
