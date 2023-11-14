@@ -31,6 +31,7 @@ def pretty_print(data: dict):
     print(json.dumps(data, indent=4))
 
 def retrieve_data(TimeSeries: int, symbol: str, api_key: str, time: str) -> dict:
+    url = None
     if TimeSeries == 1:
         function = 'TIME_SERIES_INTRADAY'
         url = f"https://www.alphavantage.co/query?function={function}&symbol={symbol}&interval={time}&apikey={api_key}"
@@ -41,14 +42,20 @@ def retrieve_data(TimeSeries: int, symbol: str, api_key: str, time: str) -> dict
     elif TimeSeries == 3:
         function = 'TIME_SERIES_WEEKLY'
         url = f"https://www.alphavantage.co/query?function={function}&symbol={symbol}&apikey={api_key}"
+        print(url)
     elif TimeSeries == 4: 
         function = 'TIME_SERIES_MONTHLY'
         url = f"https://www.alphavantage.co/query?function={function}&symbol={symbol}&apikey={api_key}"
+    else:
+        raise ValueError(f"Invalid TimeSeries value {TimeSeries}")
+    
+    if url is not None:
+        response = requests.get(url)
     
     response = requests.get(url)
 
     data = response.text
-
+    print(data)
     parsed = json.loads(data)
 
     return parsed
@@ -140,15 +147,15 @@ def get_input():
 
     chart_html = generate_line_chart_html(data,bar_chart_type=bar_chart_type,time_series=time_series,start_date=start_date,end_date=end_date,time=time)
 
-    with open("chart.html", "w", encoding="utf-8") as file:
-        file.write(chart_html)
-        file.close()
-        filename = 'file:///'+os.getcwd()+'/' + 'chart.html'
-        webbrowser.open_new_tab(filename)
+    # with open("chart.html", "w", encoding="utf-8") as file:
+    #     file.write(chart_html)
+    #     file.close()
+    #     filename = 'file:///'+os.getcwd()+'/' + 'chart.html'
+    #     webbrowser.open_new_tab(filename)
 
 
 def generate_line_chart_html(data, title='Stock Price Chart',bar_chart_type=1, time_series=1, start_date=None, end_date=None, time=None):
-    
+    # print(data.keys())
     date_list = []
     open_price_list = [] 
     high_price_list = []
@@ -165,6 +172,10 @@ def generate_line_chart_html(data, title='Stock Price Chart',bar_chart_type=1, t
         x = 'Weekly Time Series'
     elif time_series == 4: 
         x = 'Monthly Time Series'
+    else:
+    # Handle the case where none of the above conditions are met
+        raise ValueError(f"Invalid time_series value: {time_series}")
+
     # ['Time Series (Daily)']
     for date, values in data[x].items():
          date_list.append(pd.to_datetime(date).to_pydatetime())
@@ -175,7 +186,7 @@ def generate_line_chart_html(data, title='Stock Price Chart',bar_chart_type=1, t
 
     df = pd.DataFrame({'Date': date_list, 'Open': open_price_list, 'High': high_price_list, 'Low': low_price_list, 'Close': close_price_list})
 
-    if bar_chart_type == 1:
+    if bar_chart_type == '1':
         fig = px.line(df, x='Date', y=['Open', 'High', 'Low', 'Close'], title=title)
     elif bar_chart_type == 2:
         fig = go.Figure(data=[go.Candlestick(x=df['Date'],
@@ -236,19 +247,19 @@ def generate_line_chart_html(data, title='Stock Price Chart',bar_chart_type=1, t
     chart_html = fig.to_html(full_html=False)
 
     # Wrap the chart HTML in a complete HTML page
-    html = f"""
-    <!DOCTYPE html>
-    <html>
-    <head>
-        <title>{title}</title>
-    </head>
-    <body>
-        <h1>{title}</h1>
-        {chart_html}
-    </body>
-    </html>
-    """
+    # html = f"""
+    # <!DOCTYPE html>
+    # <html>
+    # <head>
+    #     <title>{title}</title>
+    # </head>
+    # <body>
+    #     <h1>{title}</h1>
+    #     {chart_html}
+    # </body>
+    # </html>
+    # """
 
-    return html
+    return chart_html
 
-get_input()
+# get_input()

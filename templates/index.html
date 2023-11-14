@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Stock Information</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> <!-- jQuery for simplicity -->
+</head>
+<body>
+    <div class="header"></div>
+    <div class="block">
+        <div class="title">
+            <h1>Stock Data Visualizer</h1>
+        </div>
+        <div class="body">
+            <!-- <form action="/get_stock_data" method="post"> -->
+            <form id="stock-data-form" method="post">
+                <label for="stock_symbol">Choose Stock Symbol:</label>
+                <!-- change the input to select option(find a way to display correct stock symbols) -->
+                <input type="text" id="stock_symbol" name="stock_symbol">
+                <br>
+                <label for="chart_type">Choose Chart Type:</label>
+                <select id="chart_type" name="chart_type">
+                    <option value="" disabled selected>Select a Symbol</option>
+                    <option value="1">1. Line</option>
+                    <option value="2">2. Bar</option>
+                </select>
+                <br>
+                <label for="time_series">Choose Time Series:</label>
+                <select id="time_series" name="time_series">
+                    <option value="" disabled selected>Select a Time Series</option>
+                    <option value="1">Intraday</option>
+                    <option value="2">Daily</option>
+                    <option value="3">Weekly</option>
+                    <option value="4">Monthly</option>
+                </select>
+                <br>
+                <label for="start_date">Start Date:</label>
+                <input type="date" id="start_date" name="start_date">
+                <br>
+                <label for="end_date">End Date:</label>
+                <input type="date" id="end_date" name="end_date">
+                <br>
+                <input type="submit" value="Submit">
+            </form>
+        </div>
+        <div class="chart-container">
+
+        </div>
+        <script>
+            $(document).ready(function(){
+                $('#stock-data-form').on('submit', function(e){
+                    e.preventDefault(); // Prevent the default form submission
+                    $.ajax({
+                        url: '/get_stock_data',
+                        type: 'POST',
+                        data: $(this).serialize(), // Serialize form data
+                        success: function(response){
+                            
+                            $('.chart-container').html(response);
+                        },
+                        error: function(error){
+                            
+                            console.log(error);
+                        }
+                    });
+                });
+            });
+        </script>
+    </div>
+</body>
+</html>
