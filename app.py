@@ -4,7 +4,6 @@ import webbrowser
 import threading 
 import os
 
-
 api_key = 'UKYXF61L981EG9X3'
 app = Flask(__name__)
 
