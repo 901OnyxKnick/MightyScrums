@@ -16,17 +16,17 @@
             <form id="stock-data-form" method="post">
                 <label for="stock_symbol">Choose Stock Symbol:</label>
                 <!-- change the input to select option(find a way to display correct stock symbols) -->
-                <input type="text" id="stock_symbol" name="stock_symbol">
+                <input type="text" id="stock_symbol" name="stock_symbol" required>
                 <br>
                 <label for="chart_type">Choose Chart Type:</label>
-                <select id="chart_type" name="chart_type">
+                <select id="chart_type" name="chart_type" required>
                     <option value="" disabled selected>Select a Symbol</option>
                     <option value="1">1. Line</option>
                     <option value="2">2. Bar</option>
                 </select>
                 <br>
                 <label for="time_series">Choose Time Series:</label>
-                <select id="time_series" name="time_series">
+                <select id="time_series" name="time_series" required>
                     <option value="" disabled selected>Select a Time Series</option>
                     <option value="1">Intraday</option>
                     <option value="2">Daily</option>
