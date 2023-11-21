@@ -61,7 +61,8 @@ def retrieve_data(TimeSeries: int, symbol: str, api_key: str, time: str) -> dict
     return parsed
 
 # time series: TIME_SERIES_INTRADAY, TIME_SERIES_DAILY, TIME_SERIES_WEEKLY, TIME_SERIES_MONTHLY
-# Function to get the function type and symbol 
+# Function to get the function type and symbol
+# Not using this function 
 def get_input():
 
     while True:
@@ -188,13 +189,15 @@ def generate_line_chart_html(data, title='Stock Price Chart',bar_chart_type=1, t
 
     if bar_chart_type == '1':
         fig = px.line(df, x='Date', y=['Open', 'High', 'Low', 'Close'], title=title)
+    # Commented out the candlestick and implemented the bar chart(Have not checked yet)
     elif bar_chart_type == 2:
-        fig = go.Figure(data=[go.Candlestick(x=df['Date'],
-                open=df['Open'],
-                high=df['High'],
-                low=df['Low'],
-                close=df['Close'])])
-        fig.update_layout(title=title)
+        # fig = go.Figure(data=[go.Candlestick(x=df['Date'],
+        #         open=df['Open'],
+        #         high=df['High'],
+        #         low=df['Low'],
+        #         close=df['Close'])])
+        # fig.update_layout(title=title)
+        fig = px.bar(df, x='Date', y=['Open', 'High', 'Low', 'Close'], title=title)
 
     fig.update_traces(line=dict(color='#FF5733'), selector=dict(name='Open'))
     fig.update_traces(line=dict(color='#0072B2'), selector=dict(name='High'))
