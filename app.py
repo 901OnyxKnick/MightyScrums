@@ -1,12 +1,19 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, jsonify
 import request as stock_request
 import webbrowser 
 import threading 
 import os
+import csv
 
 
 api_key = 'UKYXF61L981EG9X3'
 app = Flask(__name__)
+
+def get_stock_symbols():
+    with open('data/stocks.csv', 'r') as file:
+        reader = csv.DictReader(file)
+        symbols = [row['Symbol'] for row in reader]
+    return symbols
 
 def open_browser():
     print("Opening browser")
@@ -16,8 +23,17 @@ def open_browser():
 def home():
     return render_template('index.html')
 
-@app.route('/get_stock_data', methods=['POST'])
+@app.route('/get_stock_symbols', methods=['GET'])
+def get_stock_symbols_route():
+    symbols = get_stock_symbols()
+    return jsonify({'stock_symbols': symbols})
+
+@app.route('/get_stock_data', methods=['GET','POST'])
 def get_stock_data():
+    if request.method == 'GET':
+        symbols = get_stock_symbols()
+        return render_template('index.html', stock_symbols=symbols)
+    
     stock_symbol = request.form['stock_symbol']
     time_series_str = request.form['time_series']
     chart_type = request.form['chart_type']
