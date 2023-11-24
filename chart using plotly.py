@@ -4,7 +4,6 @@ import threading
 import os
 import plotly.express as px
 import pandas as pd
-import requests
 
 api_key = 'UKYXF61L981EG9X3'
 app = Flask(__name__)
@@ -35,8 +34,8 @@ def get_stock_data():
     df.index = pd.to_datetime(df.index)
     df['4. close'] = pd.to_numeric(df['4. close'])
 
-    # Create a line chart using Plotly Express
-    fig = px.line(df, x=df.index, y='4. close', title=f"Stock Data for {stock_symbol}: {start_date} to {end_date}")
+    # Create a bar chart using Plotly Express
+    fig = px.bar(df, x=df.index, y='4. close', title=f"Stock Data for {stock_symbol}: {start_date} to {end_date}")
 
     # Convert the Plotly chart to HTML
     chart_html = fig.to_html(full_html=False)
