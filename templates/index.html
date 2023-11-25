@@ -3,7 +3,7 @@
 <head>
     <title>Stock Information</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> <!-- jQuery for simplicity -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> 
 </head>
 <body>
     <div class="header"></div>
@@ -12,11 +12,14 @@
             <h1>Stock Data Visualizer</h1>
         </div>
         <div class="body">
-            <!-- <form action="/get_stock_data" method="post"> -->
             <form id="stock-data-form" method="post">
                 <label for="stock_symbol">Choose Stock Symbol:</label>
-                <!-- change the input to select option(find a way to display correct stock symbols) -->
-                <input type="text" id="stock_symbol" name="stock_symbol" required>
+                <select id="stock_symbol" name="stock_symbol">
+                    <option value="" disabled selected>Select a Stock Symbol</option>
+                    {% for symbols in stock_symbols %}
+                        <option value="{{ symbols }}">{{ symbols }}</option>
+                    {% endfor %}
+                </select>
                 <br>
                 <label for="chart_type">Choose Chart Type:</label>
                 <select id="chart_type" name="chart_type" required>
@@ -47,7 +50,25 @@
 
         </div>
         <script>
+            // first part is to get the stock symbols 
             $(document).ready(function(){
+                $.ajax({
+                    url: '/get_stock_symbols',
+                    type: 'GET',
+                    success: function(response){
+                        var stockSymbols = response.stock_symbols;
+                        for (var i = 0; i < stockSymbols.length; i++) {
+                            $('#stock_symbol').append($('<option>', {
+                                value: stockSymbols[i],
+                                text: stockSymbols[i]
+                            }));
+                        }
+                    },
+                    error: function(error){
+                        console.log(error);
+                    }
+                });
+                // this second part is to get the rest of the stock data for the chart
                 $('#stock-data-form').on('submit', function(e){
                     e.preventDefault(); // Prevent the default form submission
                     $.ajax({

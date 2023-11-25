@@ -1,25 +1,46 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, jsonify
 import request as stock_request
 import webbrowser 
 import threading 
 import os
+import csv
 
 api_key = 'UKYXF61L981EG9X3'
 app = Flask(__name__)
 
+# getting all the stock symbols from a stocks.csv file located in the data folder
+def get_stock_symbols():
+    with open('data/stocks.csv', 'r') as file:
+        reader = csv.DictReader(file)
+        symbols = [row['Symbol'] for row in reader]
+    return symbols
+
+# opening up browser
 def open_browser():
     print("Opening browser")
     webbrowser.open_new('http://127.0.0.1:5000/')
 
+# redirecting to index.html
 @app.route('/')
 def home():
     return render_template('index.html')
 
+# route from the index.html file to get all the stock symbols
+@app.route('/get_stock_symbols', methods=['GET'])
+def get_stock_symbols_route():
+    symbols = get_stock_symbols()
+    return jsonify({'stock_symbols': symbols})
+
+# main part of this app.py file basically getting all the stock data from request.py
 @app.route('/get_stock_data', methods=['POST'])
 def get_stock_data():
 
     try:
-
+        # this first part is getting all the stock symbols 
+        if request.method == 'GET':
+            symbols = get_stock_symbols()
+            return render_template('index.html', stock_symbols=symbols)
+        
         stock_symbol = request.form['stock_symbol']
         time_series_str = request.form['time_series']
         chart_type = request.form['chart_type']
@@ -27,8 +48,16 @@ def get_stock_data():
         end_date = request.form['end_date']
 
         time_series = int(time_series_str)
-        data = stock_request.retrieve_data(time_series, stock_symbol, api_key, time=None)
-        chart_html = stock_request.generate_line_chart_html(data, title=f"Stock Data for {stock_symbol}: {start_date} to {end_date}", bar_chart_type=chart_type, time_series=time_series, start_date=None, end_date=None, time=None)
+        # this is the part were strugling with the most, think we figured it out
+        # if the user selects 1 ie. INTRADAY then we set the time to 5min and pass it to the retrieve_data function in request.py
+        if time_series == 1:
+            time = '5min'
+            data = stock_request.retrieve_data(time_series, stock_symbol, api_key, time=time)
+            chart_html = stock_request.generate_line_chart_html(data, title=f"Stock Data for {stock_symbol}: {start_date} to {end_date}", bar_chart_type=chart_type, time_series=time_series, start_date=None, end_date=None, time=time)
+        # same thing but for everything not INTRADAY
+        else: 
+            data = stock_request.retrieve_data(time_series, stock_symbol, api_key, time=None)
+            chart_html = stock_request.generate_line_chart_html(data, title=f"Stock Data for {stock_symbol}: {start_date} to {end_date}", bar_chart_type=chart_type, time_series=time_series, start_date=None, end_date=None, time=None)     
         
         return chart_html
 
@@ -43,6 +72,8 @@ def get_stock_data():
         return error, 500 
 
 if __name__ == '__main__':
-    threading.Timer(1.25, open_browser).start()
+    # found that this helped with browser functionality, mainly without it when running the program itll open 2 windows at once, with this code it only opens 1
+    if os.environ.get('WERKZEUG_RUN_MAIN') == 'true':
+        threading.Timer(1.25, open_browser).start()
     app.run(debug=True)
     
